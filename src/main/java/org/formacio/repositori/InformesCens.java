@@ -2,31 +2,47 @@ package org.formacio.repositori;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 import org.formacio.domain.Persona;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class InformesCens {
 
+
+	@PersistenceContext
+	private EntityManager em;
 	/**
 	 * Retorna la llista de persones que viuen al municipi indicat
 	 */
 	public List<Persona> habitantsMunicipi(String municipi) {
-		return null;
+		TypedQuery<Persona> query = em.createQuery( "select per from Persona per where per.municipi.nom = :nomMunicipi order by per.nom", Persona.class);
+		query.setParameter("nomMunicipi", municipi);
+		return query.getResultList();
 	}
 
 	/**
 	 * Retorna el nombre d'habitants de la illa
 	 */
 	public int nombreHabitantsIlla(String illa) {
-		return 0;
+		Query query = em.createQuery(
+				"select count(persona) from Persona persona where persona.municipi.illa.nom = :nomIlla ");
+		query.setParameter("nomIlla", illa);
+		return ((Number)query.getSingleResult()).intValue();
 	}
 	
 	/**
 	 * Retorna el nombre d'habitants del municipi que son menors d'edat
 	 */
 	public int nombreHabitantsMenorsEdat(String municipi) {
-		return 0;
+		Query query = em.createQuery(
+				"select count(persona) from Persona persona where persona.municipi.nom = :nomMunicipi and persona.edat < 18");
+		query.setParameter("nomMunicipi", municipi);
+		return ((Number)query.getSingleResult()).intValue();
 	}
 
 	/**
