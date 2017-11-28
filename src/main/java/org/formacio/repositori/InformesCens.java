@@ -1,5 +1,6 @@
 package org.formacio.repositori;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -49,7 +50,8 @@ public class InformesCens {
 	 * Retorna la llista de persones que no tenen informat de quin municipi son
 	 */
 	public List<Persona> llistaPersonesSenseMunicipi() {
-		return null;
+		TypedQuery<Persona> query = em.createQuery( "select per from Persona per where per.municipi is null order by per.nom", Persona.class);
+		return query.getResultList();
     }
 
 	/**
@@ -57,7 +59,14 @@ public class InformesCens {
 	 * siii, ja ho se ..., no hem vist com ordenar, pero emprau order by i la vostra intuicio ;-)
 	 */
 	public List<String> llistaNomsPersonesOrdenatPerEdat(String illa) {
-		return null;
+		TypedQuery<Persona> query = em.createQuery(
+				"select persona from Persona persona where persona.municipi.illa.nom = :nomIlla order by persona.edat", Persona.class);
+		query.setParameter("nomIlla", illa);
+		List<String> nomPersones = new ArrayList<>();
+		for (Persona persona : query.getResultList()) {
+			nomPersones.add(persona.getNom());
+		}
+		return nomPersones;
     }
 	
 }
